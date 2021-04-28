@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -54,6 +55,24 @@ namespace TinyBrowser
                 return response.Substring(startIndex, (endIndex - startIndex));
             }
             Console.WriteLine(SearchForTitle());
+
+            var x = AllIndexesOf("<a href=", response);
+            foreach (var occ in x){
+                Console.WriteLine(occ);    
+            }
+            
+            static IEnumerable<int> AllIndexesOf(string value, string response) {
+                var indexesOfValue = new List<int>();
+                
+                for (var index = 0;; index += value.Length) {
+                    index = response.IndexOf(value, index, StringComparison.Ordinal);
+                    if (index <= 0)
+                        return indexesOfValue;
+                    indexesOfValue.Add(index);
+                }
+            }
+
+            Console.WriteLine(response.Substring(response[9044], 12));
         }
     }
 }
