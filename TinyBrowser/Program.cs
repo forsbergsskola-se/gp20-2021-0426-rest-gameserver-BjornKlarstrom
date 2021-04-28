@@ -3,6 +3,8 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace TinyBrowser
 {
@@ -13,7 +15,7 @@ namespace TinyBrowser
             Console.WriteLine("Hello Tiny Browser!");
             
             var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("GET / HTTP/0.9");
+            stringBuilder.AppendLine("GET / HTTP/1.1");
             stringBuilder.AppendLine("Host: www.acme.com");
             stringBuilder.AppendLine("Connection: close");
             stringBuilder.AppendLine();
@@ -34,10 +36,24 @@ namespace TinyBrowser
             var memory = new MemoryStream();
             stream.CopyTo(memory);
             memory.Position = 0;
+            var dataResponse = memory.ToArray();
+            var response = Encoding.ASCII.GetString(dataResponse, 0, dataResponse.Length);
 
-            var data = memory.ToArray();
-            Console.WriteLine(Encoding.ASCII.GetString(data,0,data.Length));
+            //Console.WriteLine(response);
             
+            // Searches
+            string SearchForTitle(){
+                const string openElement = "<title>";
+                const string closeElement = "</title>";
+                
+                var startIndex = response.IndexOf(openElement, StringComparison.Ordinal);
+                startIndex += openElement.Length;
+                
+                var endIndex = response.IndexOf(closeElement, StringComparison.Ordinal);
+
+                return response.Substring(startIndex, (endIndex - startIndex));
+            }
+            Console.WriteLine(SearchForTitle());
         }
     }
 }
