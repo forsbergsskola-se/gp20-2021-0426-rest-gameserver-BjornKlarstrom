@@ -40,7 +40,7 @@ namespace TinyBrowser
             var dataResponse = memory.ToArray();
             var response = Encoding.ASCII.GetString(dataResponse, 0, dataResponse.Length);
 
-            //Console.WriteLine(response);
+            Console.WriteLine(response);
             
             // Searches
             string SearchForTitle(){
@@ -56,12 +56,13 @@ namespace TinyBrowser
             }
             Console.WriteLine(SearchForTitle());
 
-            var x = AllIndexesOf("<a href=", response);
-            foreach (var occ in x){
-                Console.WriteLine(occ);    
+            var occurrences = GetAllIndexesOfTag("<a href=\"https:", response);
+
+            foreach (var tag in occurrences){
+                Console.WriteLine(response.Substring(tag,28));
             }
-            
-            static IEnumerable<int> AllIndexesOf(string value, string response) {
+
+            static IEnumerable<int> GetAllIndexesOfTag(string value, string response) { 
                 var indexesOfValue = new List<int>();
                 
                 for (var index = 0;; index += value.Length) {
@@ -71,8 +72,7 @@ namespace TinyBrowser
                     indexesOfValue.Add(index);
                 }
             }
-
-            Console.WriteLine(response.Substring(response[9044], 12));
+            
         }
     }
 }
