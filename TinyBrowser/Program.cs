@@ -1,49 +1,60 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Linq;
-using System.Linq.Expressions;
+
 
 namespace TinyBrowser
 {
     internal static class TinyBrowser
     {
+        /*public struct HostAndUrl{
+            public string hostName;
+            public string url;
+        }
+        
+        interface IVisitUrlStrategy{
+            bool CanHandle(string url);
+            HostAndUrl GetUrlAndHostnameFor(HostAndUrl current, string url);
+        }
+        
+        public class VisitLocalUrlStrategy : IVisitUrlStrategy{
+            public bool CanHandle(string url){
+                return url.StartsWith("/");
+            }
+
+            public HostAndUrl GetUrlAndHostnameFor(HostAndUrl current, string url){
+                return new HostAndUrl{
+                    hostName = current.hostName,
+                    url = Path.Combine(current.url, url)
+                };
+            }
+
+        }*/
+
         static void Main(string[] args)
         {
             Console.WriteLine("Hello Tiny Browser!");
-            
-            var stringBuilder = new StringBuilder();
-            stringBuilder.AppendLine("GET / HTTP/1.1");
-            stringBuilder.AppendLine("Host: www.acme.com");
-            stringBuilder.AppendLine("Connection: close");
-            stringBuilder.AppendLine();
-            
-            Console.WriteLine(stringBuilder.ToString());
-            
-            
+ 
+            // Connect to acme.com with TCP 
             var tcpClient = new TcpClient("acme.com",80);
-
             var stream = tcpClient.GetStream();
-
-            var message = Encoding.ASCII.GetBytes(stringBuilder.ToString());
             
-            stream.Write(message,0,message.Length);
+            // Send a HTTP-request over TCP (Root page/)
+            var streamWriter = new StreamWriter(stream);
+            streamWriter.Write("GET / HTTP/1.1\r\nHost: acme.com\r\n\r\n");
             
-
-            // Receive
-            var memory = new MemoryStream();
-            stream.CopyTo(memory);
-            memory.Position = 0;
-            var dataResponse = memory.ToArray();
-            var response = Encoding.ASCII.GetString(dataResponse, 0, dataResponse.Length);
+            // Read the response
+            var streamReader = new StreamReader(stream);
+            var response = streamReader.ReadToEnd();
 
             Console.WriteLine(response);
             
+            
+            //Console.WriteLine(SearchForTitle());
             // Searches
-            string SearchForTitle(){
+            /*string SearchForTitle(){
                 const string openElement = "<title>";
                 const string closeElement = "</title>";
                 
@@ -53,10 +64,9 @@ namespace TinyBrowser
                 var endIndex = response.IndexOf(closeElement, StringComparison.Ordinal);
 
                 return response.Substring(startIndex, (endIndex - startIndex));
-            }
-            Console.WriteLine(SearchForTitle());
+            }*/
 
-            var occurrences = GetAllIndexesOfTag("<a href=\"https:", response);
+            /*var occurrences = GetAllIndexesOfTag("<a href=\"https:", response);
 
             foreach (var tag in occurrences){
                 Console.WriteLine(response.Substring(tag,28));
@@ -71,8 +81,7 @@ namespace TinyBrowser
                         return indexesOfValue;
                     indexesOfValue.Add(index);
                 }
-            }
-            
+            }*/
         }
     }
 }
