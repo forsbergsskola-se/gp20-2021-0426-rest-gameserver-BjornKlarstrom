@@ -35,9 +35,13 @@ namespace TinyBrowser
 
             // Get and Print Links
             var links = FindAllLinksWithTitles(response).ToArray();
-            for (var i = 0; i <= links.Length; i++){
+            for (var i = 0; i < links.Length; i++){
                 Console.WriteLine($"{i}: {links[i].displayText} ({links[i].urlLink})");
             }
+            
+            // Ask user for input
+            Console.WriteLine($"\nCHOOSE ONE OF THE LINKS: (0 - {links.Length})");
+            Console.Read();
 
             CloseApplication();
         }
@@ -108,7 +112,7 @@ namespace TinyBrowser
                     .Replace("<b>", string.Empty).Replace("</b>", string.Empty);
 
                 if (displayText.StartsWith("<img")){
-                    displayText = "Img";
+                    displayText = "Image";
                 }
                 listOfLinks.Add(new LinkAndTitle{
                     urlLink = new string(url),
