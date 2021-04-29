@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net.Sockets;
 using System.Net;
 using System.Text;
@@ -31,44 +32,68 @@ namespace TinyBrowser
             // Get the response
             var response = GetResponseFromWebSite();
             Console.WriteLine(response);
-            
-            
+
+            Console.WriteLine(SearchForTitle(response));
 
             CloseApplication();
             
             
             
             
-            //Console.WriteLine(SearchForTitle());
+            
             // Searches
-            /*string SearchForTitle(){
+            static string SearchForTitle(string str){
                 const string openElement = "<title>";
                 const string closeElement = "</title>";
                 
-                var startIndex = response.IndexOf(openElement, StringComparison.Ordinal);
+                var startIndex = str.IndexOf(openElement, StringComparison.Ordinal);
                 startIndex += openElement.Length;
                 
-                var endIndex = response.IndexOf(closeElement, StringComparison.Ordinal);
+                var endIndex = str.IndexOf(closeElement, StringComparison.Ordinal);
 
-                return response.Substring(startIndex, (endIndex - startIndex));
-            }*/
-
-            /*var occurrences = GetAllIndexesOfTag("<a href=\"https:", response);
-
-            foreach (var tag in occurrences){
-                Console.WriteLine(response.Substring(tag,28));
+                return str.Substring(startIndex, (endIndex - startIndex));
             }
 
-            static IEnumerable<int> GetAllIndexesOfTag(string value, string response) { 
-                var indexesOfValue = new List<int>();
+
+            var links = FindAllLinksWithTitles(response);
+            foreach (var link in links){
+                Console.WriteLine(link.title);
+            }
+            
+            // Example...
+            // <b>The <a href="build_a_pc/boardfinder/">ACME Motherboard Finder</a>.</b>
+
+            static IEnumerable<LinkAndTitle> FindAllLinksWithTitles(string response) { 
                 
-                for (var index = 0;; index += value.Length) {
-                    index = response.IndexOf(value, index, StringComparison.Ordinal);
-                    if (index <= 0)
-                        return indexesOfValue;
-                    indexesOfValue.Add(index);
+                const string linkStartTag= "<a href=\"";
+                const char quote = '"';
+                const char titleStartTag = '>';
+                const string titleEndTag = "</a>";
+                
+                
+                var listOfLinks = new List<LinkAndTitle>();
+                
+                var splitArray = response.Split(linkStartTag);
+                splitArray = splitArray.Skip(1).ToArray();
+
+                foreach (var split in splitArray){
+                    var link = split.TakeWhile(symbol => symbol != quote).ToArray();
+                    var afterLinkPart = split[link.Length..];
+                    var titleStartIndex = afterLinkPart.IndexOf(titleStartTag) + 1;
+                    var titleEndIndex = afterLinkPart.IndexOf(titleEndTag, StringComparison.Ordinal);
+                    var title = afterLinkPart.Substring(titleStartIndex,(titleEndIndex - titleStartIndex))
+                        .Replace("<b>", string.Empty).Replace("</b>", string.Empty);
+
+                    if (title.StartsWith("<img")){
+                        title = "Img";
+                    }
+                    listOfLinks.Add(new LinkAndTitle{
+                        link = new string(link),
+                        title = new string(title)
+                    });
                 }
-            }*/
+                return listOfLinks;
+            }
         }
 
         static void SetupTcpClient(){
@@ -103,5 +128,10 @@ namespace TinyBrowser
             tcpClient.Close();
             stream.Close();
         }
+    }
+
+    public class LinkAndTitle{
+        public string link;
+        public string title;
     }
 }
