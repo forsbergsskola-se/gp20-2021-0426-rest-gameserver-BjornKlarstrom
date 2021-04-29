@@ -2,54 +2,41 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Sockets;
+using System.Net;
 using System.Text;
 
 
 namespace TinyBrowser
 {
-    internal static class TinyBrowser
-    {
-        /*public struct HostAndUrl{
-            public string hostName;
-            public string url;
-        }
-        
-        interface IVisitUrlStrategy{
-            bool CanHandle(string url);
-            HostAndUrl GetUrlAndHostnameFor(HostAndUrl current, string url);
-        }
-        
-        public class VisitLocalUrlStrategy : IVisitUrlStrategy{
-            public bool CanHandle(string url){
-                return url.StartsWith("/");
-            }
+    internal static class TinyBrowser{
+        static TcpClient tcpClient;
+        static NetworkStream stream;
+        static StreamReader streamReader;
+        static StreamWriter streamWriter;
 
-            public HostAndUrl GetUrlAndHostnameFor(HostAndUrl current, string url){
-                return new HostAndUrl{
-                    hostName = current.hostName,
-                    url = Path.Combine(current.url, url)
-                };
-            }
-
-        }*/
+        const string hostUrl = "www.acme.com";
+        const int tcpPort = 80;
+        
 
         static void Main(string[] args)
         {
             Console.WriteLine("Hello Tiny Browser!");
- 
-            // Connect to acme.com with TCP 
-            var tcpClient = new TcpClient("acme.com",80);
-            var stream = tcpClient.GetStream();
-            
+                
+            // Setup client and get stream
+            SetupTcpClient();
+                
             // Send a HTTP-request over TCP (Root page/)
-            var streamWriter = new StreamWriter(stream);
-            streamWriter.Write("GET / HTTP/1.1\r\nHost: acme.com\r\n\r\n");
-            
-            // Read the response
-            var streamReader = new StreamReader(stream);
-            var response = streamReader.ReadToEnd();
-
+            SendGetRequest();
+                
+            // Get the response
+            var response = GetResponseFromWebSite();
             Console.WriteLine(response);
+            
+            
+
+            CloseApplication();
+            
+            
             
             
             //Console.WriteLine(SearchForTitle());
@@ -82,6 +69,39 @@ namespace TinyBrowser
                     indexesOfValue.Add(index);
                 }
             }*/
+        }
+
+        static void SetupTcpClient(){
+            // Connect to "acme.com" with TCP 
+            tcpClient = new TcpClient(hostUrl, tcpPort);
+            stream = tcpClient.GetStream();
+            Console.WriteLine($"Connected to: {stream.Socket.RemoteEndPoint}");
+            
+            streamReader = new StreamReader(stream);
+            streamWriter = new StreamWriter(stream);
+        }
+        
+        static void SendGetRequest() {
+            // Send HTTP-Request to the Stream
+            var request = "GET / HTTP/1.1\r\n";
+            request += "Host:"+ hostUrl +"\r\n";
+            request += "\r\n";
+            stream.Write(Encoding.ASCII.GetBytes(request));
+        }
+        
+        static string GetResponseFromWebSite() {
+            if(stream.CanRead){
+                var response = streamReader.ReadToEnd();
+                return response;
+            }
+            Console.WriteLine("Can't read from stream...");
+            return string.Empty;
+        }
+        
+        static void CloseApplication(){
+            Console.WriteLine("Closing Application...");
+            tcpClient.Close();
+            stream.Close();
         }
     }
 }
