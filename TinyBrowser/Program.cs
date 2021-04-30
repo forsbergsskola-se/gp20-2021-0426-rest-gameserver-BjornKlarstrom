@@ -19,27 +19,31 @@ namespace TinyBrowser
         const int tcpPort = 80;
 
         static LinkAndTitle[] links;
+        static string path = "/";
         
 
         static void Main(string[] args){
-            
-                
-            // Setup client and get stream
-            SetupTcpClient();
-                
-            // Send a HTTP-request over TCP (Root page/)
-            SendGetRequest();
-                
-            // Get the response
-            var response = GetResponseFromWebSite();
-            Console.WriteLine($"\nWelcome to: {SearchForTitle(response)}");
+            ProgramLoop();
+        }
 
-            // Get and Print Links
-            links = FindAllLinksWithTitles(response).ToArray();
-            PrintAllLinks();
+        static void ProgramLoop(){
+            while (true){
+                // Setup client and get stream
+                SetupTcpClient();
+                
+                // Send a HTTP-request over TCP (Root page/)
+                SendGetRequest();
+                
+                // Get the response
+                var response = GetResponseFromWebSite();
+                Console.WriteLine($"\nWelcome to: {SearchForTitle(response)}");
 
-            AskForInput();
+                // Get and Print Links
+                links = FindAllLinksWithTitles(response).ToArray();
+                PrintAllLinks();
 
+                AskForInput();
+            }
             CloseApplication();
         }
 
@@ -55,9 +59,8 @@ namespace TinyBrowser
         
         static void SendGetRequest() {
             // Send HTTP-Request to the Stream
-            var request = "GET / HTTP/1.1\r\n";
-            request += "Host:"+ hostUrl +"\r\n";
-            request += "\r\n";
+            var request = $"GET {path} HTTP/1.1\r\n";
+            request += $"Host: {hostUrl}\r\n\r\n";
 
             streamWriter.AutoFlush = true;
             streamWriter.Write(request);
@@ -77,9 +80,9 @@ namespace TinyBrowser
             const string openElement = "<title>";
             const string closeElement = "</title>";
                 
-            var startIndex = str.IndexOf(openElement, StringComparison.Ordinal);
+            var startIndex = str.IndexOf(openElement, StringComparison.OrdinalIgnoreCase);
             startIndex += openElement.Length;
-            var endIndex = str.IndexOf(closeElement, StringComparison.Ordinal);
+            var endIndex = str.IndexOf(closeElement, StringComparison.OrdinalIgnoreCase);
             
             return str[startIndex..endIndex];
         }
@@ -119,7 +122,7 @@ namespace TinyBrowser
         }
         
         static void PrintAllLinks(){
-            if (links != null){
+            if (links.Length > 0){
                 for (var i = 0; i < links.Length; i++){
                     Console.WriteLine($"{i}: {links[i].displayText} ({links[i].urlLink})");
                 }   
@@ -130,22 +133,36 @@ namespace TinyBrowser
         }
 
         static void AskForInput(){
+            
+            var isInputCorrect = false;
+            var userInputNumber = 0;
 
-            var isCorrect = true;
-
-            do{
-                Console.WriteLine($"\nCHOOSE ONE OF THE LINKS: (0 - {links.Length})");
+            while (!isInputCorrect && links.Length > 0){
                 
-                isCorrect = int.TryParse(Console.ReadLine(), out var userNumber);
+                Console.WriteLine($"\nCHOOSE ONE OF THE LINKS: (0 - {links.Length-1})");
+                isInputCorrect = int.TryParse(Console.ReadLine(), out userInputNumber);
                 
-                if (userNumber >= 0 && userNumber <= links.Length) continue;
-                isCorrect = false;
-                Console.WriteLine("Number out of range... Press any key to continue");
+                if (userInputNumber >= 0 && userInputNumber <= links.Length-1){
+                    isInputCorrect = true;
+                    continue;
+                }
+                isInputCorrect = false;
+                Console.WriteLine("Number out of range! \nPress any key to continue...");
                 Console.ReadLine();
                 PrintAllLinks();
+            }
 
-            } while (!isCorrect);
-            
+            if (links.Length < 1){
+                Console.WriteLine("No links on this page..");    
+            }
+
+            Console.WriteLine($"You chose link number {userInputNumber}: {links[userInputNumber].displayText}");
+            Console.WriteLine("press ANY key to go there...");
+
+            Console.Read();
+            path = links[userInputNumber].urlLink;
+            path = path.TrimStart('/');
+            path = "/" + path;
         }
         
         static void CloseApplication(){
