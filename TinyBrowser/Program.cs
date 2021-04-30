@@ -17,11 +17,12 @@ namespace TinyBrowser
         
         const string hostUrl = "www.acme.com";
         const int tcpPort = 80;
+
+        static LinkAndTitle[] links;
         
 
-        static void Main(string[] args)
-        {
-            Console.WriteLine("Hello Tiny Browser!");
+        static void Main(string[] args){
+            
                 
             // Setup client and get stream
             SetupTcpClient();
@@ -31,17 +32,13 @@ namespace TinyBrowser
                 
             // Get the response
             var response = GetResponseFromWebSite();
-            Console.WriteLine(SearchForTitle(response));
+            Console.WriteLine($"\nWelcome to: {SearchForTitle(response)}");
 
             // Get and Print Links
-            var links = FindAllLinksWithTitles(response).ToArray();
-            for (var i = 0; i < links.Length; i++){
-                Console.WriteLine($"{i}: {links[i].displayText} ({links[i].urlLink})");
-            }
-            
-            // Ask user for input
-            Console.WriteLine($"\nCHOOSE ONE OF THE LINKS: (0 - {links.Length})");
-            Console.Read();
+            links = FindAllLinksWithTitles(response).ToArray();
+            PrintAllLinks();
+
+            AskForInput();
 
             CloseApplication();
         }
@@ -82,10 +79,9 @@ namespace TinyBrowser
                 
             var startIndex = str.IndexOf(openElement, StringComparison.Ordinal);
             startIndex += openElement.Length;
-                
             var endIndex = str.IndexOf(closeElement, StringComparison.Ordinal);
-
-            return str.Substring(startIndex, (endIndex - startIndex));
+            
+            return str[startIndex..endIndex];
         }
         
         // HTML Example...
@@ -120,6 +116,36 @@ namespace TinyBrowser
                 });
             }
             return listOfLinks;
+        }
+        
+        static void PrintAllLinks(){
+            if (links != null){
+                for (var i = 0; i < links.Length; i++){
+                    Console.WriteLine($"{i}: {links[i].displayText} ({links[i].urlLink})");
+                }   
+            }
+            else{
+                Console.WriteLine("No links to show...");
+            }
+        }
+
+        static void AskForInput(){
+
+            var isCorrect = true;
+
+            do{
+                Console.WriteLine($"\nCHOOSE ONE OF THE LINKS: (0 - {links.Length})");
+                
+                isCorrect = int.TryParse(Console.ReadLine(), out var userNumber);
+                
+                if (userNumber >= 0 && userNumber <= links.Length) continue;
+                isCorrect = false;
+                Console.WriteLine("Number out of range... Press any key to continue");
+                Console.ReadLine();
+                PrintAllLinks();
+
+            } while (!isCorrect);
+            
         }
         
         static void CloseApplication(){
