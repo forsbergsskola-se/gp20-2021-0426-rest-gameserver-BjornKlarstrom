@@ -1,19 +1,27 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 
 namespace GitHubExplorer
 {
-    class Program
-    {
-        public class Secrets{
-            public string Token{ get; set; }
-        }
+    public class Secrets{
+        public string Token{ get; set; }
+    }
 
+    internal static class Program
+    {
+        static readonly HttpClient httpClient = new HttpClient();
+        
+        static string myUserName = "BjornKlarstrom";
+        static string token;
+        
         static Secrets LoadAndValidateSecrets(){
             Secrets secrets;
             if (!File.Exists("secrets.json")){
@@ -29,23 +37,41 @@ namespace GitHubExplorer
                 .CurrentDirectory, "secrets.json")}");
         }
         
+        static string[] StringSplit(this string stringToSplit)
+        {
+            var splitString = stringToSplit.Split(",");
+            
+            return splitString;
+        }
+
+        static async Task GetHtmlFromWebsite(string userName){
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", token);
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("GitHubExplorer1337", "1.0"));
+            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
+
+            try{
+                var response = await httpClient.GetAsync(userName);
+                response.EnsureSuccessStatusCode();
+
+                var responseBody = await response.Content.ReadAsStringAsync();
+
+                Console.WriteLine(response);
+                //Console.WriteLine(responseBody);
+            }
+            catch (HttpRequestException exception){
+                Console.WriteLine(exception);
+            }
+            
+            httpClient.Dispose();
+        }
+        
         static void Main(string[] args){
 
-            var secrets = LoadAndValidateSecrets();
-            
-            Console.WriteLine("Welcome to the GitHub Browser!");
+            token = LoadAndValidateSecrets().Token;
+            httpClient.BaseAddress = new Uri("https://api.github.com/users/");
 
-            Console.WriteLine("Select a user you want to inspect.");
-
-            //var userToInspect = Console.ReadLine();
-            var repo = "https://github.com/forsbergsskola-se/gp20-2021-0426-rest-gameserver-BjornKlarstrom";
-            var httpClient = new HttpClient();
-            httpClient.DefaultRequestHeaders.Add("Authorization", "token : " + secrets.Token);
-            
-            var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, repo);
-            httpClient.Send(httpRequestMessage);
-
-            Console.WriteLine(httpRequestMessage.ToString());
+            var task = GetHtmlFromWebsite(myUserName);
+            task.Wait();
         }
     }
 }
