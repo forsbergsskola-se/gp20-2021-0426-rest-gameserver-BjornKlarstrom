@@ -1,13 +1,9 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
 
 namespace GitHubExplorer
 {
@@ -18,8 +14,8 @@ namespace GitHubExplorer
     internal static class Program
     {
         static readonly HttpClient httpClient = new HttpClient();
-        
-        static string myUserName = "BjornKlarstrom";
+
+        const string myUserName = "BjornKlarstrom";
         static string token;
         
         static Secrets LoadAndValidateSecrets(){
@@ -45,9 +41,9 @@ namespace GitHubExplorer
         }
 
         static async Task GetHtmlFromWebsite(string userName){
-            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", token);
-            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("GitHubExplorer1337", "1.0"));
-            httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
+            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", token);
+            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("GitHubExplorer", "1.0"));
+            //httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
 
             try{
                 var response = await httpClient.GetAsync(userName);
@@ -56,7 +52,7 @@ namespace GitHubExplorer
                 var responseBody = await response.Content.ReadAsStringAsync();
 
                 Console.WriteLine(response);
-                //Console.WriteLine(responseBody);
+                Console.WriteLine(responseBody);
             }
             catch (HttpRequestException exception){
                 Console.WriteLine(exception);
