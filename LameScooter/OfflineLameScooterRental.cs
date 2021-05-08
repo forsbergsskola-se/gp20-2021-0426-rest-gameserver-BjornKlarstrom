@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -7,18 +8,21 @@ using Newtonsoft.Json;
 
 namespace LameScooter{
     public class OfflineLameScooterRental : ILameScooterRental{
-        public async Task<int> GetScooterCountInStation(string stationName){
-            var scooterData = await File.ReadAllTextAsync("scooters.json");
-            var stationArray = JsonConvert.DeserializeObject<StationInfo[]>(scooterData);
+        public  Task<int> GetScooterCountInStation(string stationName){
 
-            foreach (var stationInfo in stationArray){
-                Console.WriteLine(stationInfo.Name);
+            try{
+                var scootersData = File.ReadAllText("scooters.json");
+                var stationList = JsonConvert.DeserializeObject<List<Station>>(scootersData);
+                
+                foreach (var station in stationList!.Where(station => station.Name == stationName)){
+                    return Task.FromResult(station.BikesAvailable);
+                }
+                throw new Exception($"{stationName} don't exist");
             }
-
-            var station = stationArray!.FirstOrDefault(info => info.Name == stationName);
-            if (station == null)
-                throw new NotFoundException(stationName);
-            return station.BikesAvailable;
+            catch (Exception exception){
+                Console.WriteLine(exception);
+                throw;
+            }
         }
     }
 

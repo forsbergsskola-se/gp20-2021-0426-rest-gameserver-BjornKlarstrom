@@ -9,8 +9,9 @@ namespace LameScooter{
         static async Task Main(string[] args){
 
             ILameScooterRental rental = new OfflineLameScooterRental();
+            
 
-            var count = await rental.GetScooterCountInStation("Ooppera");
+            var count = await rental.GetScooterCountInStation("Myyrmäki station");
             
             Console.WriteLine($"Number of Scooters Available at this Station: {count}");
 
