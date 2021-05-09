@@ -8,27 +8,22 @@ using Newtonsoft.Json;
 
 namespace LameScooter{
     public class OfflineLameScooterRental : ILameScooterRental{
-        public  Task<int> GetScooterCountInStation(string stationName){
+        public Task<int> GetScooterCountInStation(string stationName){
 
             try{
                 var scootersData = File.ReadAllText("scooters.json");
                 var stationList = JsonConvert.DeserializeObject<List<Station>>(scootersData);
-                
+
                 foreach (var station in stationList!.Where(station => station.Name == stationName)){
                     return Task.FromResult(station.BikesAvailable);
                 }
+
                 throw new Exception($"{stationName} don't exist");
             }
             catch (Exception exception){
                 Console.WriteLine(exception);
                 throw;
             }
-        }
-    }
-
-    public class NotFoundException : Exception{
-        public NotFoundException(string stationName){
-            Console.WriteLine($"{stationName} not found");
         }
     }
 }
