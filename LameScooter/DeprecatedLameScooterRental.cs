@@ -21,10 +21,10 @@ namespace LameScooter{
 
             for(var i = 0; i < splitText.Length - 1; i++){
                 var keyValue = splitText[i].Split(':', StringSplitOptions.TrimEntries);
-
-                stationList.Add(new Station());
-                stationList[i].Name = keyValue[0];
-                stationList[i].BikesAvailable = int.Parse(keyValue[1]);
+                stationList.Add(new Station{
+                    Name = keyValue[0],
+                    BikesAvailable = int.Parse(keyValue[1])
+                });
             }
             
             foreach (var station in stationList!.Where(station => station.Name == stationName)){
