@@ -34,7 +34,7 @@ namespace LameScooter{
                     return new DeprecatedLameScooterRental();
                     break;
                 case "realtime":
-                    Console.WriteLine("Soon to be implemented...");
+                    return new RealTimeLameScooterRental();
                     break;
                 case "mongodb":
                     Console.WriteLine("Soon to be implemented...");
