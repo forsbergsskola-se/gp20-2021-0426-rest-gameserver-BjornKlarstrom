@@ -6,13 +6,18 @@ namespace LameScooter{
     internal static class Program{
         static async Task Main(string[] args){
 
-            ILameScooterRental rental = new DeprecatedLameScooterRental();
-            
-            if (args[0].Any(char.IsDigit)) 
-                throw new ArgumentException("Invalid Message:");
-                
-            var count = await rental.GetScooterCountInStation(args[0]);
-            Console.WriteLine($"Number of Scooters Available at {args[0]} is: {count}");
+            ILameScooterRental rental = new OfflineLameScooterRental();
+
+            try{
+                var count = await rental.GetScooterCountInStation(args[0]);
+                Console.WriteLine($"Number of Scooters Available at {args[0]} is: {count}");
+            }
+            catch (ArgumentException argumentException){
+                Console.WriteLine(argumentException);
+            }
+            catch (NotFoundException notFoundException){
+                Console.WriteLine(notFoundException);
+            }
         }
     }
 }

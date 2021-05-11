@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +10,9 @@ namespace LameScooter{
     public class OfflineLameScooterRental : ILameScooterRental{
         static string FilePath  => "scooters.json";
         public async Task<int> GetScooterCountInStation(string stationName){
+            
+            if (stationName.Any(char.IsDigit)) 
+                throw new ArgumentException("Invalid Message");
 
             var scootersData = File.ReadAllTextAsync(FilePath);
             var stationList = JsonConvert.DeserializeObject<List<Station>>(await scootersData);
