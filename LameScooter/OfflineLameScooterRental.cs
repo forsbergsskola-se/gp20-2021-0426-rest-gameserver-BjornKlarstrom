@@ -12,7 +12,7 @@ namespace LameScooter{
         public async Task<int> GetScooterCountInStation(string stationName){
             
             if (stationName.Any(char.IsDigit)) 
-                throw new ArgumentException("Invalid Message");
+                throw new ArgumentException("Invalid Message (No numbers allowed in name)");
 
             var scootersData = File.ReadAllTextAsync(FilePath);
             var stationList = JsonConvert.DeserializeObject<List<Station>>(await scootersData);
@@ -20,7 +20,7 @@ namespace LameScooter{
             foreach (var station in stationList!.Where(station => station.Name == stationName)){
                 return station.BikesAvailable;
             }
-            throw new NotFoundException($"Could not find: {stationName}");
+            throw new NotFoundException($"Could not find station: {stationName}");
         }
     }
 }
