@@ -15,14 +15,14 @@ namespace LameScooter{
             var stationsText = await File.ReadAllTextAsync(FilePath);
             var splitText = stationsText.Split('\n', StringSplitOptions.TrimEntries);
 
-            foreach (var split in splitText){
-                var keyValue = split.Split(':', StringSplitOptions.TrimEntries);
-                Console.WriteLine(keyValue[0]);
-                stationsDictionary.Add(keyValue[0],int.Parse(keyValue[1]));
+            for(var i = 0; i < splitText.Length - 1; i++){
+                var keyValue = splitText[i].Split(':', StringSplitOptions.TrimEntries);
+                Console.WriteLine(keyValue[0] + keyValue[1]);
+                
+                stationsDictionary.Add(keyValue[0], int.Parse(keyValue[1]));
             }
-
-
-            return null;
+            
+            return stationsDictionary;
         }
         
         public async Task<int> GetScooterCountInStation(string stationName){

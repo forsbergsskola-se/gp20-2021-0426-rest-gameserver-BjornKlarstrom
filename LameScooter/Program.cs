@@ -12,7 +12,7 @@ namespace LameScooter{
                 throw new ArgumentException("Invalid Message:");
                 
             var count = await rental.GetScooterCountInStation(args[0]);
-            //Console.WriteLine($"Number of Scooters Available at {args[0]} is: {count}");
+            Console.WriteLine($"Number of Scooters Available at {args[0]} is: {count}");
         }
     }
 }
