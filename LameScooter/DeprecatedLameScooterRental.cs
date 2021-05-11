@@ -9,12 +9,19 @@ namespace LameScooter{
         static string FilePath  => "scooters.txt";
 
         static async Task<Dictionary<string, int>> GetDictionaryTextFile(){
+            
+            var stationsDictionary = new Dictionary<string,int>();
 
             var stationsText = await File.ReadAllTextAsync(FilePath);
-            var splitText = stationsText.Split(':', StringSplitOptions.TrimEntries);
+            var splitText = stationsText.Split('\n', StringSplitOptions.TrimEntries);
 
-            Console.WriteLine(splitText[0]);
-            
+            foreach (var split in splitText){
+                var keyValue = split.Split(':', StringSplitOptions.TrimEntries);
+                Console.WriteLine(keyValue[0]);
+                stationsDictionary.Add(keyValue[0],int.Parse(keyValue[1]));
+            }
+
+
             return null;
         }
         
