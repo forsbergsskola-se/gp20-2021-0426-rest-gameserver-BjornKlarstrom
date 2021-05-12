@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System.Threading.Tasks;
 
 namespace LameScooter{
     public class Station : IStation{
@@ -16,9 +16,5 @@ namespace LameScooter{
         public string State { get; set; }
         public string[] Networks { get; set; }
         public bool RealTimeData{ get; set;}
-    }
-
-    public class LameScooterStationList{
-        public List<Station> Stations{ get; set; }
     }
 }

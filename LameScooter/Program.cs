@@ -33,9 +33,8 @@ namespace LameScooter{
                     return new DeprecatedLameScooterRental();
                 case "realtime":
                     return new RealTimeLameScooterRental();
-                case "mongodb":
-                    Console.WriteLine("Soon to be implemented...");
-                    break;
+                case "mongo":
+                    return new MongoDbLameScooterRental();
             }
             throw new ArgumentException("Type of database doesn't exist");
         }
