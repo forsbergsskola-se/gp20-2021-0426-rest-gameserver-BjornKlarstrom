@@ -29,17 +29,12 @@ namespace LameScooter{
             switch (args[^1]){
                 case "offline":
                     return new OfflineLameScooterRental();
-                    break;
                 case "deprecated":
                     return new DeprecatedLameScooterRental();
-                    break;
                 case "realtime":
                     return new RealTimeLameScooterRental();
-                    break;
                 case "mongodb":
                     Console.WriteLine("Soon to be implemented...");
-                    break;
-                default:
                     break;
             }
             throw new ArgumentException("Type of database doesn't exist");

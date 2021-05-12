@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace LameScooter{
     public class OfflineLameScooterRental : ILameScooterRental{
@@ -14,10 +12,11 @@ namespace LameScooter{
             if (stationName.Any(char.IsDigit)) 
                 throw new ArgumentException("Invalid Message (No numbers allowed in name)");
 
-            var scootersData = File.ReadAllTextAsync(FilePath);
-            var stationList = JsonConvert.DeserializeObject<List<Station>>(await scootersData);
-            
-            foreach (var station in stationList!.Where(station => station.Name == stationName)){
+            var databaseFile = File.ReadAllTextAsync(FilePath);
+            var databaseObject = JsonConvert.DeserializeObject<LameScooterStationList>(await databaseFile);
+
+            if (databaseObject == null) throw new Exception("StationList is NULL");
+            foreach (var station in databaseObject.Stations.Where(station => station.Name == stationName)){
                 return station.BikesAvailable;
             }
             throw new NotFoundException($"Could not find station: {stationName}");

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Linq.Expressions;
 
 namespace LameScooter{
     public class DeprecatedLameScooterRental : ILameScooterRental{
@@ -16,14 +15,14 @@ namespace LameScooter{
             
             var stationList = new List<Station>();
 
-            var stationsText = await File.ReadAllTextAsync(FilePath);
-            var splitText = stationsText.Split('\n', StringSplitOptions.TrimEntries);
+            var databaseFile = await File.ReadAllTextAsync(FilePath);
+            var lineSplitText = databaseFile.Split('\n', StringSplitOptions.TrimEntries);
 
-            for(var i = 0; i < splitText.Length - 1; i++){
-                var keyValue = splitText[i].Split(':', StringSplitOptions.TrimEntries);
+            for(var i = 0; i < lineSplitText.Length - 1; i++){
+                var keyValueText = lineSplitText[i].Split(':', StringSplitOptions.TrimEntries);
                 stationList.Add(new Station{
-                    Name = keyValue[0],
-                    BikesAvailable = int.Parse(keyValue[1])
+                    Name = keyValueText[0],
+                    BikesAvailable = int.Parse(keyValueText[1])
                 });
             }
             

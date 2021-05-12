@@ -17,4 +17,8 @@ namespace LameScooter{
         public string[] Networks { get; set; }
         public bool RealTimeData{ get; set;}
     }
+
+    public class LameScooterStationList{
+        public List<Station> Stations{ get; set; }
+    }
 }
