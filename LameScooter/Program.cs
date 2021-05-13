@@ -22,21 +22,16 @@ namespace LameScooter{
         }
 
         static ILameScooterRental SetDatabaseVersion(IReadOnlyList<string> args){
-            
             if(args.Count != 2)
                 throw new ArgumentException("Missing argument for database type");
 
-            switch (args[^1]){
-                case "offline":
-                    return new OfflineLameScooterRental();
-                case "deprecated":
-                    return new DeprecatedLameScooterRental();
-                case "realtime":
-                    return new RealTimeLameScooterRental();
-                case "mongo":
-                    return new MongoDbLameScooterRental();
-            }
-            throw new ArgumentException("Type of database doesn't exist");
+            return args[^1] switch{
+                "offline" => new OfflineLameScooterRental(),
+                "deprecated" => new DeprecatedLameScooterRental(),
+                "realtime" => new RealTimeLameScooterRental(),
+                "mongo" => new MongoDbLameScooterRental(),
+                _ => throw new ArgumentException("Type of database doesn't exist")
+            };
         }
     }
 }

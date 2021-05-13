@@ -9,8 +9,9 @@ using static System.Threading.Tasks.Task<int>;
 
 namespace LameScooter{
     public class MongoDbLameScooterRental : ILameScooterRental{
+    
         readonly MongoClient mongoClient = new MongoClient("mongodb://localhost:27017");
-        public async Task<int> GetScooterCountInStation(string stationName){
+        public Task<int> GetScooterCountInStation(string stationName){
             
             if (stationName.Any(char.IsDigit)) 
                 throw new ArgumentException("Invalid Message (No numbers allowed in name)");
@@ -30,7 +31,7 @@ namespace LameScooter{
                 throw new NotFoundException($"Could not find station: {stationName}");
             }
 
-            return station.BikesAvailable;
+            return Task.FromResult(station.BikesAvailable);
         }
     }
 }
