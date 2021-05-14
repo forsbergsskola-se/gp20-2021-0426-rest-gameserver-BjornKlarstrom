@@ -3,9 +3,12 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MMORPG{
-    public class PlayersController{
-
-        IRepository repository;
+    
+    [ApiController]
+    [Route("[controller]")]
+    public class PlayersController : ControllerBase{
+        
+        readonly IRepository repository;
         public PlayersController(IRepository repository){
             this.repository = repository;
         }

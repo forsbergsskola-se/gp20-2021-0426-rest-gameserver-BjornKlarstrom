@@ -9,6 +9,7 @@ namespace MMORPG
 {
     public class Program
     {
+        
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
@@ -21,6 +22,4 @@ namespace MMORPG
                     webBuilder.UseStartup<Startup>();
                 });
     }
-    
-    
 }

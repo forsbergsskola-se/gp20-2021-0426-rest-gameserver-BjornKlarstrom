@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 namespace LameScooter{
     internal static class Program{
         static async Task Main(string[] args){
+            
 
             var stationInput = args[0];
             var rental = SetDatabaseVersion(args);

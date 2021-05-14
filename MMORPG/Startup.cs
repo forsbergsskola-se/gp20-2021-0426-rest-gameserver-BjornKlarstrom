@@ -28,6 +28,11 @@ namespace MMORPG
         {
 
             services.AddControllers();
+
+            // Register IRepository implementation to DI-Container...
+            // This will make ASP.Net pass the FileRepository to the constructor of our PlayersController
+            services.AddSingleton<IRepository, FileRepository>();
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MMORPG", Version = "v1" });
