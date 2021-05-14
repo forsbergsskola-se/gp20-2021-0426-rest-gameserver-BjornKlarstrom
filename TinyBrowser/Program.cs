@@ -171,9 +171,4 @@ namespace TinyBrowser
             stream.Close();
         }
     }
-
-    public class LinkAndTitle{
-        public string urlLink;
-        public string displayText;
-    }
 }
