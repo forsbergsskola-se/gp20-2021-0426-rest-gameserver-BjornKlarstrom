@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MMORPG{
     
+    
     [ApiController]
     [Route("[controller]")]
     public class PlayersController : ControllerBase{
@@ -24,14 +25,8 @@ namespace MMORPG{
         }
 
         [HttpPost("Create")]
-        public Task<Player> Create(NewPlayer player){
-            
-            var newPlayer = new Player{
-                Name = player.Name,
-                CreationTime = DateTime.Now,
-                Id = Guid.NewGuid()
-            };
-            return repository.Create(newPlayer);
+        public async Task<Player> Create(NewPlayer player){
+            return await repository.Create(player);
         }
 
         [HttpPut("Modify")]

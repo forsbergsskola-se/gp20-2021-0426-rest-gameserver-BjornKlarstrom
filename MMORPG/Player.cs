@@ -8,5 +8,19 @@ namespace MMORPG{
         public int Level{ get; set; }
         public bool IsDeleted { get; set; }
         public DateTime CreationTime { get; set; }
+
+        public Player(string name){
+            this.Id = Guid.NewGuid();
+            this.Name = name;
+            this.Score = 0;
+            this.Level = 0;
+            this.IsDeleted = false;
+            this.CreationTime = DateTime.UnixEpoch;
+        }
+
+        public Player() : this(string.Empty){
+            Id = Guid.Empty;
+            CreationTime = DateTime.UnixEpoch;
+        }
     }
 }
