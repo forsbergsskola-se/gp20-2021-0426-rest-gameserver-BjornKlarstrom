@@ -1,12 +1,18 @@
 ﻿using System;
+using System.Threading.Tasks;
 
 namespace TestClient{
-    public class PlayerModel{
+    public class Player{
         public Guid Id {get; set;}
         public string Name {get; set;}
         public int Score { get; set; }
         public int Level{ get; set; }
         public bool IsDeleted { get; set; }
         public DateTime CreationTime { get; set; }
+
+        public static Task<Player[]> GetAllPlayers(){
+            var url = Program.urlRoot;
+            return Task.FromResult<Player[]>(null);
+        }
     }
 }
