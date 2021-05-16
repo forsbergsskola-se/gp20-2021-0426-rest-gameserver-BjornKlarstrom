@@ -32,8 +32,9 @@ namespace MMORPG{
             throw new NotImplementedException();
         }
 
-        public Task<Player[]> GetAll(){
-            throw new NotImplementedException();
+        public async Task<Player[]> GetAll(){
+            var players = await ReadFileRepository() ?? new List<Player>();
+            return players.ToArray();
         }
 
         public async Task<Player> Create(NewPlayer newPlayer){

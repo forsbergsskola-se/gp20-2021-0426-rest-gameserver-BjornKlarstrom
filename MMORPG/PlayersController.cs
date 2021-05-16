@@ -6,7 +6,7 @@ namespace MMORPG{
     
     
     [ApiController]
-    [Route("[controller]")]
+    [Route("players")]
     public class PlayersController : ControllerBase{
         
         readonly IRepository repository;
