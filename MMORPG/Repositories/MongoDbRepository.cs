@@ -46,8 +46,19 @@ namespace MMORPG.Repositories{
             }
         }
 
-        public Task<Player> Create(NewPlayer player){
-            throw new NotImplementedException();
+        public async Task<Player> Create(NewPlayer player){
+            try{
+                var collection = mongoDatabase.GetCollection<NewPlayer>(mongoCollectionName);
+                var createdPlayer = collection.InsertOneAsync(player);
+                if (await Task.WhenAny(createdPlayer, Task.Delay(2000)) == createdPlayer){
+                    return Player.CreateNewPlayer(player);
+                }
+                throw new RequestTimeOutException("408: Request Time Out");
+            }
+            catch (Exception exception){
+                Console.WriteLine(exception);
+                throw;
+            }
         }
 
         public Task<Player> Modify(Guid id, ModifiedPlayer player){

@@ -32,7 +32,7 @@ namespace MMORPG
 
             // Register IRepository implementation to DI-Container...
             // This will make ASP.Net pass the FileRepository to the constructor of our PlayersController
-            services.AddSingleton<IRepository, FileRepository>();
+            services.AddSingleton<IRepository, MongoDbRepository>();
             
             services.AddSwaggerGen(c =>
             {
