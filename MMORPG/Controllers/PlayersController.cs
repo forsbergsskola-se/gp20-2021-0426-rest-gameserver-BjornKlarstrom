@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using MMORPG.Models;
+using MMORPG.Repositories;
 
-namespace MMORPG{
+namespace MMORPG.Controllers{
     
     
     [ApiController]

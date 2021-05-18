@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
+using System.Linq;
 using System.Threading.Tasks;
+using MMORPG.Models;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace MMORPG{
+namespace MMORPG.Repositories{
     public class FileRepository : IRepository{
         
         const string fileName = "game-dev.txt";
@@ -37,17 +40,15 @@ namespace MMORPG{
             return players.ToArray();
         }
 
-        public async Task<Player> Create(NewPlayer newPlayer){
-            
-            var players = await ReadFileRepository() ?? new List<Player>();
-            var player = new Player(newPlayer.Name);
-            players.Add(player);
-
-            await using var fileStream = File.OpenWrite(path);
-            await JsonSerializer.SerializeAsync(fileStream, players);
-            
-            fileStream.Close();
-            return player;
+        public async Task<Player> Create(NewPlayer newPlayer)
+        {
+            var players = await GetAll();
+            var list = players.ToList();
+            var addedPlayer = Player.CreateNewPlayer(newPlayer);
+            list.Add(addedPlayer);
+            var json = JsonConvert.SerializeObject(players);
+            await File.WriteAllTextAsync(fileName, json);
+            return addedPlayer;
         }
 
         public Task<Player> Modify(Guid id, ModifiedPlayer player){

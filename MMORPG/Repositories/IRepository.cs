@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
+using MMORPG.Models;
 
-namespace MMORPG{
+namespace MMORPG.Repositories{
     public interface IRepository{
         Task<Player> Get(Guid id);
         Task<Player[]> GetAll();
