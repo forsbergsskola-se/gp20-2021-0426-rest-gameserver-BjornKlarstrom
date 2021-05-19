@@ -22,8 +22,22 @@ namespace MMORPG.Repositories{
             mongoDatabase = mongoClient.GetDatabase(databaseName);
         }
         
-        public Task<Player> Get(Guid id){
-            throw new NotImplementedException();
+        public async Task<Player> Get(Guid id){
+            try{
+                var collection = mongoDatabase.GetCollection<Player>(mongoCollectionName);
+                var getPlayerTask = collection.FindAsync(player => player.Id == id);
+                
+                if (await Task.WhenAny(getPlayerTask, Task.Delay(2000)) != getPlayerTask)
+                    throw new RequestTimeOutException("408: Request Time Out");
+                
+                if (getPlayerTask.Result == null)
+                    throw new NotFoundException("404: Not Found");
+                return getPlayerTask.Result.First();
+            }
+            catch (Exception exception){
+                Console.WriteLine(exception);
+                throw;
+            }
         }
 
         public async Task<Player[]> GetAll(){
@@ -61,8 +75,24 @@ namespace MMORPG.Repositories{
             }
         }
 
-        public Task<Player> Modify(Guid id, ModifiedPlayer player){
-            throw new NotImplementedException();
+        public async Task<Player> Modify(Guid id, ModifiedPlayer modifiedPlayer){
+            try{
+                var collection = mongoDatabase.GetCollection<Player>(mongoCollectionName);
+                var playerToModify = 
+                    Builders<Player>.Update.Inc("Score", modifiedPlayer.Score);
+                var modifyTask = collection.FindOneAndUpdateAsync(player => player.Id == id, playerToModify);
+                
+                if (await Task.WhenAny(modifyTask, Task.Delay(2000)) != modifyTask)
+                    throw new RequestTimeOutException("408: Request Time Out");
+                if(modifyTask.Result == null)
+                    throw new NotFoundException($"404: {nameof(Player)} not found");
+                modifyTask.Result.Score += modifiedPlayer.Score;
+                return modifyTask.Result;
+            }
+            catch (Exception e){
+                Console.WriteLine(e.Message);
+                throw;
+            }
         }
 
         public Task<Player> Delete(Guid id){
