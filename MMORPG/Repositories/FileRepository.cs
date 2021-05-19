@@ -40,11 +40,11 @@ namespace MMORPG.Repositories{
             return players.ToArray();
         }
 
-        public async Task<Player> Create(NewPlayer newPlayer)
+        public async Task<Player> Create(Player newPlayer)
         {
             var players = await GetAll();
             var list = players.ToList();
-            var addedPlayer = Player.CreateNewPlayer(newPlayer);
+            var addedPlayer = Player.CreateNewPlayer(new NewPlayer());
             list.Add(addedPlayer);
             var json = JsonConvert.SerializeObject(players);
             await File.WriteAllTextAsync(fileName, json);

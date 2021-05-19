@@ -18,7 +18,7 @@ namespace MMORPG.Controllers{
             this.repository = repository;
         }
         
-        [HttpGet]
+        [HttpGet("All")]
         public async Task<IActionResult> GetPlayers(){
             try{
                 var players = await repository.GetAll();
@@ -35,13 +35,8 @@ namespace MMORPG.Controllers{
             return repository.Get(id);
         }
 
-        [HttpGet("GetAll")]
-        public Task<Player[]> GetAll(){
-            return repository.GetAll();
-        }
-
         [HttpPost("Create")]
-        public async Task<Player> Create(NewPlayer player){
+        public async Task<Player> Create(Player player){
             return await repository.Create(player);
         }
 

@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MMORPG Tests", "MMORPG Tests\MMORPG Tests.csproj", "{645727DB-AC89-4BA9-90FF-EE7848FAEE75}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MMORPG", "..\MMORPG\MMORPG.csproj", "{40D25AE2-F20D-46B6-B0F8-DAAC5941C46F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{645727DB-AC89-4BA9-90FF-EE7848FAEE75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{645727DB-AC89-4BA9-90FF-EE7848FAEE75}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{645727DB-AC89-4BA9-90FF-EE7848FAEE75}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{645727DB-AC89-4BA9-90FF-EE7848FAEE75}.Release|Any CPU.Build.0 = Release|Any CPU
+		{40D25AE2-F20D-46B6-B0F8-DAAC5941C46F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{40D25AE2-F20D-46B6-B0F8-DAAC5941C46F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{40D25AE2-F20D-46B6-B0F8-DAAC5941C46F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{40D25AE2-F20D-46B6-B0F8-DAAC5941C46F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

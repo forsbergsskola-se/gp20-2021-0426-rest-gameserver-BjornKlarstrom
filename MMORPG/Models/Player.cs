@@ -1,6 +1,10 @@
 ﻿using System;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace MMORPG.Models{
+    
+    [Serializable]
     public class Player{
         
         public static Player CreateNewPlayer(NewPlayer newPlayer)
@@ -14,9 +18,9 @@ namespace MMORPG.Models{
             return player;
         }
         
-        public Guid Id {get; set;}
+        [BsonId] public Guid Id {get; set;}
         public string Name {get; set;}
-        public int Score { get; set; }
+        [BsonElement("Score")] public int Score { get; set; }
         public int Level{ get; set; }
         public bool IsDeleted { get; set; }
         public DateTime CreationTime { get; set; }
