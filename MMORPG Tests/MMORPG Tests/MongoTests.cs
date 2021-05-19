@@ -26,12 +26,30 @@ namespace MMORPG_Tests{
 
             try{
                 var createNewPlayerTask = mongoDb.Create(player);
-                Console.WriteLine(createNewPlayerTask.Result.Level);
+                Console.WriteLine(createNewPlayerTask.Result.Name);
                 Assert.AreEqual(player.Name, createNewPlayerTask.Result.Name);
             }
-            catch (Exception e){
-                Console.WriteLine(e);
-                Assert.Fail(e.GetBaseException().Message);
+            catch (Exception exception){
+                Console.WriteLine(exception);
+                Assert.Fail(exception.GetBaseException().Message);
+            }
+        }
+
+        [Test]
+        public void GetAllPLayersInDb(){
+            try{
+                var getAllPLayersTask = mongoDb.GetAll();
+                Console.WriteLine($"Number of players in db is: {getAllPLayersTask.Result.Length}");
+                foreach (var player in getAllPLayersTask.Result){
+                    Console.WriteLine(player.Name);
+                }
+                
+                Assert.AreEqual("TestName", getAllPLayersTask.Result[0].Name);
+                Assert.Less(0, getAllPLayersTask.Result.Length);
+            }
+            catch (Exception exception){
+                Console.WriteLine(exception.GetBaseException().Message);
+                Assert.Fail(exception.GetBaseException().Message);
             }
         }
     }
