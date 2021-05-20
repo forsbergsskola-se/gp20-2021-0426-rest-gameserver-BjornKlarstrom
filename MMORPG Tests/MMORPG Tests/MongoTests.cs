@@ -91,5 +91,21 @@ namespace MMORPG_Tests{
                 Assert.Fail(exception.GetBaseException().Message);
             }
         }
+
+        [Test]
+        public void FindAndSetPlayerToDeleted(){
+            try{
+                var playerId = Guid.Parse("230D3A2D-354A-4723-91EF-737C6682FBE7");
+                var getPlayerTask = mongoDb.Get(playerId);
+                mongoDb.Delete(playerId);
+                
+                Console.WriteLine($"Player {getPlayerTask.Result.Name} is deleted: {getPlayerTask.Result.IsDeleted}");
+                Assert.AreEqual(true, getPlayerTask.Result.IsDeleted);
+            }
+            catch (Exception exception){
+                Console.WriteLine(exception.GetBaseException().Message);
+                Assert.Fail(exception.GetBaseException().Message);
+            }
+        }
     }
 }

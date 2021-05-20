@@ -22,7 +22,7 @@ namespace MMORPG.Models{
         public string Name {get; set;}
         [BsonElement("Score")] public int Score { get; set; }
         public int Level{ get; set; }
-        public bool IsDeleted { get; set; }
+        [BsonElement("IsDeleted")] public bool IsDeleted { get; set; }
         public DateTime CreationTime { get; set; }
     }
 }

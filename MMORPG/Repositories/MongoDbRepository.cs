@@ -95,8 +95,24 @@ namespace MMORPG.Repositories{
             }
         }
 
-        public Task<Player> Delete(Guid id){
-            throw new NotImplementedException();
+        public async Task<Player> Delete(Guid id){
+            try{
+                var collection = mongoDatabase.GetCollection<Player>(mongoCollectionName);
+                var playerToDelete = Builders<Player>.Update.Set("IsDeleted", true);
+                var setToDeletedTask = collection.FindOneAndUpdateAsync(player => player.Id == id, playerToDelete);
+                
+
+                if (await Task.WhenAny(setToDeletedTask, Task.Delay(2000)) != setToDeletedTask)
+                    throw new RequestTimeOutException("408: Request Time Out");
+                if(setToDeletedTask.Result == null)
+                    throw new NotFoundException($"{setToDeletedTask.Result} Not Found");
+
+                return setToDeletedTask.Result;
+            }
+            catch (Exception exception){
+                Console.WriteLine(exception);
+                throw;
+            }
         }
     }
 }

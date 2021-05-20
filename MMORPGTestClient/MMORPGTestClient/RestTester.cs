@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using JsonConvert = Newtonsoft.Json.JsonConvert;
+using Newtonsoft.Json;
 
 namespace MMORPGTestClient{
     
