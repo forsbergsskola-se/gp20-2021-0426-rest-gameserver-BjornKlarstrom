@@ -6,6 +6,13 @@ namespace MMORPG.Models{
     
     [Serializable]
     public class Player{
+        [BsonId] public Guid Id {get; set;}
+        public string Name {get; set;}
+        [BsonElement("Score")] public int Score { get; set; }
+        
+        public int Level{ get; set; }
+        [BsonElement("IsDeleted")] public bool IsDeleted { get; set; }
+        public DateTime CreationTime { get; set; }
         
         public static Player CreateNewPlayer(NewPlayer newPlayer)
         {
@@ -17,12 +24,5 @@ namespace MMORPG.Models{
             };
             return player;
         }
-        
-        [BsonId] public Guid Id {get; set;}
-        public string Name {get; set;}
-        [BsonElement("Score")] public int Score { get; set; }
-        public int Level{ get; set; }
-        [BsonElement("IsDeleted")] public bool IsDeleted { get; set; }
-        public DateTime CreationTime { get; set; }
     }
 }

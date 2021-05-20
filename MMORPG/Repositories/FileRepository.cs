@@ -13,24 +13,6 @@ namespace MMORPG.Repositories{
         const string fileName = "game-dev.txt";
         static readonly string repositoryPath = Path.Combine(Environment.CurrentDirectory, fileName);
 
-        /*static async Task<List<Player>> ReadFileRepository(){
-            try{
-                using var streamReader = new StreamReader(repositoryPath);
-                var data = await streamReader.ReadToEndAsync();
-                var result = JsonSerializer.Deserialize<List<Player>>(data);
-                
-                if(result == null) return new List<Player>();
-                
-                streamReader.Close();
-                return result;
-            }
-            catch (Exception e){
-                Console.WriteLine(e);
-                throw;
-            }
-        }*/
-        
-        
         public async Task<Player> Get(Guid id){
             var players = await GetAll();
             return players.FirstOrDefault(player => player.Id == id);
@@ -69,7 +51,35 @@ namespace MMORPG.Repositories{
             return null;
         }
 
-        public Task<Player> Delete(Guid id){
+        public async Task<Player> Delete(Guid id){
+            var players = await GetAll();
+
+            foreach (var player in players){
+                if (player.Id != id)
+                    continue;
+
+                player.IsDeleted = true;
+                var newRepoData = JsonConvert.SerializeObject(players);
+
+                await File.WriteAllTextAsync(repositoryPath, newRepoData);
+                return player;
+            }
+            return null;
+        }
+
+        public Task<Player> AddItem(Guid id){
+            throw new NotImplementedException();
+        }
+
+        public Task<Player> GetItem(Guid id){
+            throw new NotImplementedException();
+        }
+
+        public Task<Player> ModifyItem(Guid id, ModifiedItem modifiedItem){
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteItem(Guid id){
             throw new NotImplementedException();
         }
     }

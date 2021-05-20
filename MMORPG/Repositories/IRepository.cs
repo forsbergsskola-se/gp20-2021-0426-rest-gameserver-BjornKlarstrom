@@ -9,5 +9,10 @@ namespace MMORPG.Repositories{
         Task<Player> Create(Player player);
         Task<Player> Modify(Guid id, ModifiedPlayer player);
         Task<Player> Delete(Guid id);
+
+        Task<Player> AddItem(Guid id);
+        Task<Player> GetItem(Guid id);
+        Task<Player> ModifyItem(Guid id, ModifiedItem modifiedItem);
+        Task DeleteItem(Guid id);
     }
 }
