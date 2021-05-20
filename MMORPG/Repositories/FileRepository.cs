@@ -11,11 +11,11 @@ namespace MMORPG.Repositories{
     public class FileRepository : IRepository{
         
         const string fileName = "game-dev.txt";
-        static readonly string path = Path.Combine(Environment.CurrentDirectory, fileName);
+        static readonly string repositoryPath = Path.Combine(Environment.CurrentDirectory, fileName);
 
-        static async Task<List<Player>> ReadFileRepository(){
+        /*static async Task<List<Player>> ReadFileRepository(){
             try{
-                using var streamReader = new StreamReader(path);
+                using var streamReader = new StreamReader(repositoryPath);
                 var data = await streamReader.ReadToEndAsync();
                 var result = JsonSerializer.Deserialize<List<Player>>(data);
                 
@@ -28,31 +28,45 @@ namespace MMORPG.Repositories{
                 Console.WriteLine(e);
                 throw;
             }
-        }
+        }*/
         
         
-        public Task<Player> Get(Guid id){
-            throw new NotImplementedException();
+        public async Task<Player> Get(Guid id){
+            var players = await GetAll();
+            return players.FirstOrDefault(player => player.Id == id);
         }
 
         public async Task<Player[]> GetAll(){
-            var players = await ReadFileRepository() ?? new List<Player>();
-            return players.ToArray();
+            var repoData = await File.ReadAllTextAsync(repositoryPath);
+            var players = JsonConvert.DeserializeObject<List<Player>>(repoData);
+            return players?.ToArray();
         }
 
         public async Task<Player> Create(Player newPlayer)
         {
             var players = await GetAll();
-            var list = players.ToList();
+            var playerList = players.ToList();
             var addedPlayer = Player.CreateNewPlayer(new NewPlayer());
-            list.Add(addedPlayer);
+            playerList.Add(addedPlayer);
             var json = JsonConvert.SerializeObject(players);
             await File.WriteAllTextAsync(fileName, json);
             return addedPlayer;
         }
 
-        public Task<Player> Modify(Guid id, ModifiedPlayer player){
-            throw new NotImplementedException();
+        public async Task<Player> Modify(Guid id, ModifiedPlayer modifiedPlayer){
+            var players = await GetAll();
+
+            foreach (var player in players){
+                if (player.Id != id)
+                    continue;
+
+                player.Score = modifiedPlayer.Score;
+                var newRepoData = JsonConvert.SerializeObject(players);
+
+                await File.WriteAllTextAsync(repositoryPath, newRepoData);
+                return player;
+            }
+            return null;
         }
 
         public Task<Player> Delete(Guid id){
