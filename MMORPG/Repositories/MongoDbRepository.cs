@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using MMORPG.Models;
 using MMORPG.MongoExceptions;
@@ -113,6 +114,22 @@ namespace MMORPG.Repositories{
                 Console.WriteLine(exception);
                 throw;
             }
+        }
+
+        public Task<Player> AddItem(Guid id, NewItem newItem){
+            throw new NotImplementedException();
+        }
+
+        public Task<List<Item>> GetAllItems(Guid id){
+            throw new NotImplementedException();
+        }
+
+        public Task ModifyItem(Guid id, Guid targetId, ModifiedItem modifiedItem){
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteItem(Guid id, Guid deleteTargetId){
+            throw new NotImplementedException();
         }
     }
 }

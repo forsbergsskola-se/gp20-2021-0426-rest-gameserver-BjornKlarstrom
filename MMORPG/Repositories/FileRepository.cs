@@ -67,20 +67,40 @@ namespace MMORPG.Repositories{
             return null;
         }
 
-        public Task<Player> AddItem(Guid id){
-            throw new NotImplementedException();
+        public async Task<Player> AddItem(Guid id, NewItem newItem){
+            var players = await GetAll();
+
+            foreach (var player in players){
+                if(player.Id != id)
+                    continue;
+                
+                player.Items.Add(Item.CreateNewItem(newItem));
+            }
+            return null;
         }
 
-        public Task<Player> GetItem(Guid id){
-            throw new NotImplementedException();
+        public async Task<List<Item>> GetAllItems(Guid id){
+            var player = await Get(id);
+            return player.Items;
         }
 
-        public Task<Player> ModifyItem(Guid id, ModifiedItem modifiedItem){
-            throw new NotImplementedException();
+        public async Task ModifyItem(Guid id, Guid targetId, ModifiedItem modifiedItem){
+            var player = await Get(id);
+
+            foreach (var item in player.Items.Where(item => item.Id == targetId)){
+                item.Level = modifiedItem.Level;
+            }
         }
 
-        public Task DeleteItem(Guid id){
-            throw new NotImplementedException();
+        public async Task DeleteItem(Guid id, Guid deleteTargetId){
+            var players = await GetAll();
+
+            foreach (var player in players.Where(item => item.Id == id)){
+                player.Items.RemoveAll(item => item.Id == deleteTargetId);
+            }
+            
+            var newRepoData = JsonConvert.SerializeObject(players);
+            await File.WriteAllTextAsync(repositoryPath, newRepoData);
         }
     }
 }

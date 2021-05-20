@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
@@ -14,13 +15,16 @@ namespace MMORPG.Models{
         [BsonElement("IsDeleted")] public bool IsDeleted { get; set; }
         public DateTime CreationTime { get; set; }
         
+        public List<Item> Items{ get; set; }
+        
         public static Player CreateNewPlayer(NewPlayer newPlayer)
         {
             var player = new Player
             {
                 Id = Guid.NewGuid(),
                 Name = newPlayer.Name,
-                CreationTime = DateTime.UtcNow
+                CreationTime = DateTime.UtcNow,
+                Items = new List<Item>()
             };
             return player;
         }
