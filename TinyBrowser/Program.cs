@@ -3,9 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Sockets;
-using System.Net;
-using System.Text;
-
 
 namespace TinyBrowser
 {
@@ -21,34 +18,28 @@ namespace TinyBrowser
         static LinkAndTitle[] links;
         static string path = "/";
         
-
         static void Main(string[] args){
             ProgramLoop();
         }
 
         static void ProgramLoop(){
             while (true){
-                // Setup client and get stream
+
                 SetupTcpClient();
-                
-                // Send a HTTP-request over TCP (Root page/)
+
                 SendGetRequest();
-                
-                // Get the response
+
                 var response = GetResponseFromWebSite();
                 Console.WriteLine($"\nWelcome to: {SearchForTitle(response)}");
-
-                // Get and Print Links
+                
                 links = FindAllLinksWithTitles(response).ToArray();
                 PrintAllLinks();
 
                 AskForInput();
             }
-            CloseApplication();
         }
 
         static void SetupTcpClient(){
-            // Connect to "acme.com" with TCP 
             tcpClient = new TcpClient(hostUrl, tcpPort);
             stream = tcpClient.GetStream();
             Console.WriteLine($"Connected to: {stream.Socket.RemoteEndPoint}");
@@ -58,7 +49,6 @@ namespace TinyBrowser
         }
         
         static void SendGetRequest() {
-            // Send HTTP-Request to the Stream
             var request = $"GET {path} HTTP/1.1\r\n";
             request += $"Host: {hostUrl}\r\n\r\n";
 
@@ -74,8 +64,6 @@ namespace TinyBrowser
             Console.WriteLine("Can't read from stream...");
             return string.Empty;
         }
-        
-        // Searches
         static string SearchForTitle(string str){
             const string openElement = "<title>";
             const string closeElement = "</title>";
@@ -86,9 +74,6 @@ namespace TinyBrowser
             
             return str[startIndex..endIndex];
         }
-        
-        // HTML Example...
-        // <b>The <a href="build_a_pc/boardfinder/">ACME Motherboard Finder</a>.</b>
         static IEnumerable<LinkAndTitle> FindAllLinksWithTitles(string response) { 
                 
             const string linkTag = "<a href=\"";

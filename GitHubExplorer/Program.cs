@@ -4,70 +4,119 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
+using GitHubExplorer.Secrets;
 
 namespace GitHubExplorer
 {
-    public class Secrets{
-        public string Token{ get; set; }
-    }
-
     internal static class Program
     {
-        static readonly HttpClient httpClient = new HttpClient();
-
-        const string myUserName = "BjornKlarstrom";
-        static string token;
-        
-        static Secrets LoadAndValidateSecrets(){
-            Secrets secrets;
-            if (!File.Exists("secrets.json")){
-                secrets = new Secrets();
-                File.WriteAllText("secrets.json", JsonSerializer.Serialize(secrets));
-            }
-            else{
-                secrets = JsonSerializer.Deserialize<Secrets>(File.ReadAllText("secrets.json"));
-            }
-
-            if (!string.IsNullOrEmpty(secrets?.Token)) return secrets;
-            throw new Exception($@"ERROR: Needs to define a token in file {Path.Combine(System.Environment 
-                .CurrentDirectory, "secrets.json")}");
-        }
-        
-        static string[] StringSplit(this string stringToSplit)
-        {
-            var splitString = stringToSplit.Split(",");
-            
-            return splitString;
-        }
-
-        static async Task GetHtmlFromWebsite(string userName){
-            //httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", token);
-            httpClient.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("GitHubExplorer", "1.0"));
-            //httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
-
-            try{
-                var response = await httpClient.GetAsync(userName);
-                response.EnsureSuccessStatusCode();
-
-                var responseBody = await response.Content.ReadAsStringAsync();
-
-                Console.WriteLine(response);
-                Console.WriteLine(responseBody);
-            }
-            catch (HttpRequestException exception){
-                Console.WriteLine(exception);
-            }
-            
-            httpClient.Dispose();
-        }
-        
         static void Main(string[] args){
+            MainLoop();
+        }
 
-            token = LoadAndValidateSecrets().Token;
-            httpClient.BaseAddress = new Uri("https://api.github.com/users/");
+        static void MainLoop(){
+            
+            Console.Clear();
 
-            var task = GetHtmlFromWebsite(myUserName);
-            task.Wait();
+            Console.WriteLine("\n>>>>>>>>>> GitHub Explorer <<<<<<<<<<" +
+                              "\n\nWhat would you like to search for?" +
+                              "\n1. A github username" +
+                              "\n2. A github username(and get all the repositories)");
+
+            int.TryParse(Console.ReadLine(), out var input);
+            
+            switch (input) {
+                case 1:
+                    Console.Clear();
+                    Console.WriteLine("\nType a github username");
+                    Task.WaitAll(SearchForUser(Console.ReadLine()));
+                    break;
+                case 2:
+                    Console.Clear();
+                    Console.WriteLine("\nType a github username and get all their repositories");
+                    Task.WaitAll(SearchForRepositories(Console.ReadLine()));
+                    break;
+            }
+        }
+
+        static async Task SearchForRepositories(string user)
+        {
+            Console.Clear();
+            var client = new HttpClient {BaseAddress = new Uri("https://api.github.com")};
+            var token = SecretValidator.LoadToken();
+
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("AppName", "1.0"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Token", token);
+
+            var response = await client.GetAsync($"/users/{user}/repos");
+            
+            var streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
+            
+            var repoJson = await streamReader.ReadToEndAsync();
+            streamReader.Close();
+            client.Dispose();
+
+            var reposDes  = JsonSerializer.Deserialize<JsonElement>(repoJson);
+            var repos = new GithubRepositories(reposDes);
+
+            for (var i = 0; i < repos.names.Count; i++) {
+                Console.WriteLine("---------------------------");
+                Console.WriteLine($"Name: {repos.names[i]}");
+                Console.WriteLine($"Description: {repos.descriptions[i]}");
+                Console.WriteLine($"Url: {repos.urls[i]}");
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("---------------------------");
+            Console.WriteLine("Press any key for main menu");
+            Console.WriteLine("2. Go to user profile");
+            var input = Console.ReadLine();
+            Console.Clear();
+            if (input == "2") {
+                Task.WaitAll(SearchForUser(user));
+            }
+            else {
+                MainLoop();
+            }
+        }
+        
+        static async Task SearchForUser(string userName)
+        {
+            Console.Clear();
+            var client = new HttpClient {BaseAddress = new Uri("https://api.github.com")};
+            var token = SecretValidator.LoadToken();
+
+            client.DefaultRequestHeaders.UserAgent.Add(new ProductInfoHeaderValue("AppName", "1.0"));
+            client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Token", token);
+            
+            var response = await client.GetAsync($"/users/{userName}");
+            
+            var streamReader = new StreamReader(await response.Content.ReadAsStreamAsync());
+            
+            var userData = await streamReader.ReadToEndAsync();
+            streamReader.Close();
+            client.Dispose();
+            
+            var user = JsonSerializer.Deserialize<GithubUser>(userData);
+
+            if (user != null)
+                foreach (var info in user.Info) {
+                    Console.WriteLine(info);
+                }
+
+            Console.WriteLine("----------------------------");
+            Console.WriteLine("Press any key for main menu");
+            Console.WriteLine("2. Go to users repositories");
+            var input = Console.ReadLine();
+            Console.Clear();
+            if (input == "2") {
+                Task.WaitAll(SearchForRepositories(userName));
+            }
+            else {
+                MainLoop();
+            }
         }
     }
 }
