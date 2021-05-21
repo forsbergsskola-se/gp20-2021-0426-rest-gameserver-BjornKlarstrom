@@ -6,6 +6,8 @@ namespace LameScooter{
     internal static class Program{
         static async Task Main(string[] args){
             
+            // Type a station to search for in Main(args[0]). 
+            // Followed by database typ (offline, deprecated, realtime or mongo) as args[1].
 
             var stationInput = args[0];
             var rental = SetDatabaseVersion(args);

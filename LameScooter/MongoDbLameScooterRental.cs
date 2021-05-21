@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
-using static System.Threading.Tasks.Task<int>;
 
 namespace LameScooter{
     public class MongoDbLameScooterRental : ILameScooterRental{
