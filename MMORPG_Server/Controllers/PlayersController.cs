@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 
 namespace MMORPG.Controllers{
     
-    
     [ApiController]
     [Route("players")]
     public class PlayersController : ControllerBase{

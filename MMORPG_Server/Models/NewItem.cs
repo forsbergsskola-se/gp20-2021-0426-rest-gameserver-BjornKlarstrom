@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using MMORPG.Validation;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace MMORPG.Models{
     public class NewItem{

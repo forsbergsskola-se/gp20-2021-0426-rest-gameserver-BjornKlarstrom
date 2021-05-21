@@ -116,12 +116,19 @@ namespace MMORPG.Repositories{
             }
         }
 
-        public Task<Player> AddItem(Guid id, NewItem newItem){
-            throw new NotImplementedException();
+        public async Task<Player> AddItem(Guid id, NewItem newItem){
+            var collection = mongoDatabase.GetCollection<Player>("players");
+            var fieldDef = new StringFieldDefinition<Player, Guid>(nameof(Player.Id));
+            var filter = Builders<Player>.Filter.Eq(fieldDef, id);
+            var update = Builders<Player>.Update.Push($"{nameof(Player)}.{nameof(Item)}", Item.CreateNewItem(newItem));
+            var result = await collection.FindOneAndUpdateAsync(
+                filter, update, new FindOneAndUpdateOptions<Player>{ ReturnDocument = ReturnDocument.After, IsUpsert = false});
+            return result;
         }
 
-        public Task<List<Item>> GetAllItems(Guid id){
-            throw new NotImplementedException();
+        public async Task<List<Item>> GetAllItems(Guid id){
+            var player = await Get(id);
+            return player.Items;
         }
 
         public Task ModifyItem(Guid id, Guid targetId, ModifiedItem modifiedItem){

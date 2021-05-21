@@ -5,7 +5,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using MMORPG.Models;
 using Newtonsoft.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace MMORPG.Repositories{
     public class FileRepository : IRepository{
